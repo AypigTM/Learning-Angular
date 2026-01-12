@@ -1,9 +1,11 @@
 import { Routes } from '@angular/router';
-import { ProfileComponent } from './page/profile/profile.component';
 
-export const routes: Routes = [
-    {
+export const appRoutes: Routes = [
+  {
     path: 'profile',
-    component: ProfileComponent,
+    loadChildren: () =>
+      import('./page/profile/profile.routes')
+        .then(m => m.profileRoutes),
   },
+  { path: '', redirectTo: 'profile', pathMatch: 'full' },
 ];
