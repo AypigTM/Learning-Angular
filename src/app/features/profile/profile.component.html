@@ -1,0 +1,28 @@
+@if (vm$ | async; as vm) {
+  @switch (vm.state) {
+    @case ('loading') {
+      <p>Chargement…</p>
+    }
+    @case ('error') {
+      <p>Erreur : {{ vm.error }}</p>
+    }
+    @case ('ready') {
+      <section>
+        <h2>Identité</h2>
+        <p>{{ vm.user.firstName }} {{ vm.user.lastName }}</p>
+        <p>{{ vm.user.email }}</p>
+      </section>
+
+      <section>
+        <h2>Rôles</h2>
+        <ul>
+          @for (role of vm.user.roles; track role.id) {
+            <li>{{ role.label }}</li>
+          } @empty {
+            <li>Aucun rôle</li>
+          }
+        </ul>
+      </section>
+    }
+  }
+}

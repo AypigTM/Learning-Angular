@@ -1,8 +1,0 @@
-@if (userListe$ | async; as user) {
-  <p-card header="Profil">
-    <p>{{ user.firstName }} {{ user.lastName }}</p>
-    <p>{{ user.email }}</p>
-  </p-card>
-} @else {
-  <p>Chargement…</p>
-}
