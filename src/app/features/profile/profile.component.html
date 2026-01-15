@@ -1,3 +1,9 @@
+<div style="display:flex; gap:8px; margin-bottom:12px;">
+  <button (click)="refresh()">Refresh</button>
+  <button (click)="fail()">Simuler erreur</button>
+  <button (click)="recover()">Réparer</button>
+</div>
+
 @if (vm$ | async; as vm) {
   @switch (vm.state) {
     @case ('loading') {

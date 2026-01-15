@@ -1,22 +1,56 @@
 import { Injectable } from '@angular/core';
-import { Observable, defer, of, throwError } from 'rxjs';
-import { delay, shareReplay } from 'rxjs/operators';
+import { Observable, Subject, defer, of, throwError } from 'rxjs';
+import { delay } from 'rxjs/operators';
 import { User } from './models/user.model';
-import { MOCK_USER } from './mocks/user.mock';
+import { MOCK_USERS } from './mocks/user.mock';
 
 @Injectable({ providedIn: 'root' })
 export class UserService {
-  // Toggle pour tester l'UI erreur (tu pourras le retirer après)
-  private readonly shouldFail = false;
+  private readonly refresh$ = new Subject<void>();
 
-  // Contrat principal: le composant consomme ça, rien d'autre.
-  readonly user$: Observable<User> = defer(() => {
-    if (this.shouldFail) {
-      return throwError(() => new Error('Impossible de charger le profil'));
+  private lastUserId: string | null = null;
+  private shouldFail = false;
+
+  /** Exposé au composant pour déclencher le cycle de chargement (lecture seule). */
+  readonly refreshTrigger$: Observable<void> = this.refresh$.asObservable();
+
+  refresh(): void {
+    this.refresh$.next();
+  }
+
+  setShouldFail(value: boolean): void {
+    this.shouldFail = value;
+    this.refresh(); // relance un cycle avec le nouvel état
+  }
+
+  /** Simule un chargement (comme si HTTP). Peut émettre une erreur. */
+  loadUser(): Observable<User> {
+    return defer(() => {
+      if (this.shouldFail) {
+        return throwError(() => new Error("Échec du chargement de l'utilisateur"));
+      }
+
+      const pick = this.pickRandomUserExcludingLast();
+      this.lastUserId = pick.id;
+      return of(pick);
+    }).pipe(delay(200));
+  }
+
+  private pickRandomUserExcludingLast(): User {
+    if (MOCK_USERS.length === 0) {
+      throw new Error('MOCK_USERS est vide');
     }
-    return of(MOCK_USER);
-  }).pipe(
-    delay(300),              // simule une requête
-    shareReplay({ bufferSize: 1, refCount: true }) // cache simple
-  );
+
+    if (MOCK_USERS.length === 1) {
+      return MOCK_USERS[0];
+    }
+
+    let candidate: User;
+    do {
+      const idx = Math.floor(Math.random() * MOCK_USERS.length);
+      candidate = MOCK_USERS[idx];
+    } while (candidate.id === this.lastUserId);
+
+    return candidate;
+  }
 }

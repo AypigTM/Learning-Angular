@@ -1,41 +1,63 @@
-import { Component, inject, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { catchError, map, Observable, of, startWith } from 'rxjs';
-import { CardModule } from 'primeng/card';
+import { Component, inject } from '@angular/core';
+import { Observable, of } from 'rxjs';
+import { catchError, map, startWith, switchMap } from 'rxjs/operators';
 import { User } from './models/user.model';
 import { UserService } from './user.service';
+import { AsyncPipe } from '@angular/common';
 
- type Vm = 
-    | { state: 'loading'}
-    | { state: 'error'; error: string }
-    | { state: 'ready'; user: User  };
+type Vm =
+  | { state: 'loading' }
+  | { state: 'error'; error: string }
+  | { state: 'ready'; user: User };
 
 @Component({
+  standalone: true,
   selector: 'app-profile',
-  imports: [
-    CommonModule,
-    CardModule
-  ],
+  imports: [AsyncPipe],
   templateUrl: './profile.component.html',
-  styleUrl: './profile.component.css',
+  styleUrls: ['./profile.component.css'],
 })
-export class ProfileComponent implements OnInit {
-  
-  private readonly _userService = inject(UserService);
+export class ProfileComponent {
+  private readonly userService = inject(UserService);
 
-  readonly vm$: Observable<Vm> = this._userService.user$.pipe(
-    map(user => ({ state: 'ready' as const, user })),
-    startWith({ state: 'loading' as const }),
-    catchError(err =>
-      of({ state: 'error' as const, error: err?.message ?? 'Erreur inconnue' })
-    )
+  readonly vm$: Observable<Vm> = this.userService.refreshTrigger$.pipe(
+    startWith(void 0),
+
+    // chaque refresh lance un "cycle" complet (loading -> ready/error)
+    switchMap(() => this.createVmCycle$())
   );
 
-
-
-  readonly user$: Observable<User> = this._userService.user$;
-
-  ngOnInit(): void {
+  refresh(): void {
+    this.userService.refresh();
   }
-    
+
+  fail(): void {
+    this.userService.setShouldFail(true);
+  }
+
+  recover(): void {
+    this.userService.setShouldFail(false);
+  }
+
+  /** Un cycle = une tentative de chargement avec ses états UI. */
+  private createVmCycle$(): Observable<Vm> {
+    return this.userService.loadUser().pipe(
+      map(user => this.ready(user)),
+      startWith(this.loading()),
+      catchError(err => of(this.error(err)))
+    );
+  }
+
+  private loading(): Vm {
+    return { state: 'loading' };
+  }
+
+  private ready(user: User): Vm {
+    return { state: 'ready', user };
+  }
+
+  private error(err: unknown): Vm {
+    const message = err instanceof Error ? err.message : 'Erreur inconnue';
+    return { state: 'error', error: message };
+  }
 }
