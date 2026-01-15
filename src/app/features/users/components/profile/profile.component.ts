@@ -1,9 +1,9 @@
 import { Component, inject } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { catchError, map, startWith, switchMap } from 'rxjs/operators';
-import { User } from './models/user.model';
-import { UserService } from './user.service';
 import { AsyncPipe } from '@angular/common';
+import { User } from '../../data/models/user.model';
+import { UserService } from '../../data/user.service';
 
 type Vm =
   | { state: 'loading' }
@@ -18,9 +18,9 @@ type Vm =
   styleUrls: ['./profile.component.css'],
 })
 export class ProfileComponent {
-  private readonly userService = inject(UserService);
+  private readonly _userService = inject(UserService);
 
-  readonly vm$: Observable<Vm> = this.userService.refreshTrigger$.pipe(
+  readonly vm$: Observable<Vm> = this._userService.refreshTrigger$.pipe(
     startWith(void 0),
 
     // chaque refresh lance un "cycle" complet (loading -> ready/error)
@@ -28,20 +28,20 @@ export class ProfileComponent {
   );
 
   refresh(): void {
-    this.userService.refresh();
+    this._userService.refresh();
   }
 
   fail(): void {
-    this.userService.setShouldFail(true);
+    this._userService.setShouldFail(true);
   }
 
   recover(): void {
-    this.userService.setShouldFail(false);
+    this._userService.setShouldFail(false);
   }
 
   /** Un cycle = une tentative de chargement avec ses états UI. */
   private createVmCycle$(): Observable<Vm> {
-    return this.userService.loadUser().pipe(
+    return this._userService.loadUser().pipe(
       map(user => this.ready(user)),
       startWith(this.loading()),
       catchError(err => of(this.error(err)))

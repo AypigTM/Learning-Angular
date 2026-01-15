@@ -33,7 +33,16 @@ export class UserService {
       const pick = this.pickRandomUserExcludingLast();
       this.lastUserId = pick.id;
       return of(pick);
-    }).pipe(delay(200));
+    }).pipe(delay(50));
+  }
+
+  loadUsers(): Observable<User[]> {
+    return defer(() => {
+      if (this.shouldFail) {
+        return throwError(() => new Error("Échec du chargement des utilisateurs"));
+      }
+      return of(MOCK_USERS);
+    }).pipe(delay(50));
   }
 
   private pickRandomUserExcludingLast(): User {

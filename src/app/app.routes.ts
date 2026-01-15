@@ -2,10 +2,9 @@ import { Routes } from '@angular/router';
 
 export const appRoutes: Routes = [
   {
-    path: 'profile',
+    path: 'users',
     loadChildren: () =>
-      import('./features/profile/profile.routes')
-        .then(m => m.profileRoutes),
+      import('./features/users/users.routes')
+        .then(m => m.userRoutes),
   },
-  { path: '', redirectTo: 'profile', pathMatch: 'full' },
 ];

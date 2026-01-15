@@ -1,0 +1,28 @@
+<div style="display:flex; gap:8px; margin-bottom:12px;">
+  <button (click)="refresh()">Refresh</button>
+  <button (click)="fail()">Simuler erreur</button>
+  <button (click)="recover()">Réparer</button>
+</div>
+
+@if (vm$ | async; as vm) {
+    @switch (vm.state) {
+        @case ('loading') {
+            <p>Chargement…</p>
+        }
+        @case ('error') {
+            <p>Erreur : {{ vm.error }}</p>
+        }
+        @case ('ready') {
+            <section>
+                <h2>Liste des utilisateurs</h2>
+                <ul>
+                    @for (user of vm.user; track user.id) {
+                        <li>{{ user.firstName }} {{ user.lastName }} - {{ user.email }}</li>
+                    } @empty {
+                        <li>Aucun utilisateur trouvé</li>
+                    }
+                </ul>
+            </section>
+        }
+    }
+}
