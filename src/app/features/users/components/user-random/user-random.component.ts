@@ -4,7 +4,7 @@ import { UserService } from '../../data/user.service';
 
 @Component({
   standalone: true,
-  selector: 'app-profile',
+  selector: 'app-user-random',
   imports: [],
   templateUrl: './user-random.component.html',
 })

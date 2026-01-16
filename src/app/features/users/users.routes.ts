@@ -18,4 +18,5 @@ export const userRoutes: Routes = [
     loadComponent: () =>
       import('./components/liste-user/liste-user.component').then((m) => m.ListeUserComponent),
   },
+  { path: '', redirectTo: 'user-liste', pathMatch: 'full' },
 ];

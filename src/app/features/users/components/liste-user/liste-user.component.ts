@@ -1,8 +1,8 @@
+import { AsyncPipe } from '@angular/common';
 import { Component, inject } from '@angular/core';
+import { catchError, map, Observable, of, startWith, switchMap } from 'rxjs';
 import { User } from '../../data/models/user.model';
 import { UserService } from '../../data/user.service';
-import { catchError, map, Observable, of, startWith, switchMap } from 'rxjs';
-import { AsyncPipe } from '@angular/common';
 
 type Vm =
   | { state: 'loading' }
