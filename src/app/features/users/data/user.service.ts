@@ -36,10 +36,24 @@ export class UserService {
     }).pipe(delay(50));
   }
 
+  loadUserById(id: string) {
+    return defer(() => {
+      if (this.shouldFail) {
+        return throwError(() => new Error(`Echec du chargement`));
+      }
+      const user = MOCK_USERS.find((user) => user.id === id);
+
+      if (!user) {
+        return throwError(() => new Error(`Echec du chargement de l'utilisateur ${id}`));
+      }
+      return of(user).pipe(delay(50));
+    });
+  }
+
   loadUsers(): Observable<User[]> {
     return defer(() => {
       if (this.shouldFail) {
-        return throwError(() => new Error("Échec du chargement des utilisateurs"));
+        return throwError(() => new Error('Échec du chargement des utilisateurs'));
       }
       return of(MOCK_USERS);
     }).pipe(delay(50));
@@ -61,5 +75,13 @@ export class UserService {
     } while (candidate.id === this.lastUserId);
 
     return candidate;
+  }
+
+  getRandomUserId(): string {
+    if (MOCK_USERS.length === 0) {
+      throw new Error('MOCK_USERS est vide');
+    }
+    const idx = Math.floor(Math.random() * MOCK_USERS.length);
+    return MOCK_USERS[idx].id;
   }
 }

@@ -1,14 +1,12 @@
 import { Component, inject } from '@angular/core';
 import { Observable, of } from 'rxjs';
-import { catchError, map, startWith, switchMap } from 'rxjs/operators';
+import { catchError, filter, map, startWith, switchMap, withLatestFrom } from 'rxjs/operators';
 import { AsyncPipe } from '@angular/common';
 import { User } from '../../data/models/user.model';
 import { UserService } from '../../data/user.service';
+import { ActivatedRoute } from '@angular/router';
 
-type Vm =
-  | { state: 'loading' }
-  | { state: 'error'; error: string }
-  | { state: 'ready'; user: User };
+type Vm = { state: 'loading' } | { state: 'error'; error: string } | { state: 'ready'; user: User };
 
 @Component({
   standalone: true,
@@ -19,12 +17,18 @@ type Vm =
 })
 export class ProfileComponent {
   private readonly _userService = inject(UserService);
+  private readonly _route = inject(ActivatedRoute);
+
+  private readonly _userId$: Observable<string> = this._route.paramMap.pipe(
+    map((params) => params.get('id')),
+    filter((id): id is string => !!id),
+  );
 
   readonly vm$: Observable<Vm> = this._userService.refreshTrigger$.pipe(
     startWith(void 0),
 
     // chaque refresh lance un "cycle" complet (loading -> ready/error)
-    switchMap(() => this.createVmCycle$())
+    switchMap(() => this.createVmCycle$()),
   );
 
   refresh(): void {
@@ -41,10 +45,16 @@ export class ProfileComponent {
 
   /** Un cycle = une tentative de chargement avec ses états UI. */
   private createVmCycle$(): Observable<Vm> {
-    return this._userService.loadUser().pipe(
-      map(user => this.ready(user)),
-      startWith(this.loading()),
-      catchError(err => of(this.error(err)))
+    const id$ = this._route.paramMap.pipe(map((params) => params.get('id') as string));
+
+    return this._userId$.pipe(
+      switchMap((id) =>
+        this._userService.loadUserById(id).pipe(
+          map((user) => this.ready(user)),
+          startWith(this.loading()),
+          catchError((err) => of(this.error(err))),
+        ),
+      ),
     );
   }
 

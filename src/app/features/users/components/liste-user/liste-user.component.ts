@@ -4,11 +4,10 @@ import { UserService } from '../../data/user.service';
 import { catchError, map, Observable, of, startWith, switchMap } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
 
-
 type Vm =
   | { state: 'loading' }
   | { state: 'error'; error: string }
-  | { state: 'ready'; user: User[] };
+  | { state: 'ready'; users: User[] };
 
 @Component({
   selector: 'app-liste-user',
@@ -23,29 +22,8 @@ export class ListeUserComponent {
     startWith(void 0),
 
     // chaque refresh lance un "cycle" complet (loading -> ready/error)
-    switchMap(() => this.createVmCycle$())
+    switchMap(() => this.createVmCycle$()),
   );
-
-  createVmCycle$(): Observable<Vm> {
-    return this._userService.loadUsers().pipe(
-      map(users => this.ready(users)),
-      startWith(this.loading()),
-      catchError(err => of(this.error(err)))
-    );
-  }
-
-  private ready(user: User[]): Vm {
-    return { state: 'ready', user };
-  }
-
-  private loading(): Vm {
-    return { state: 'loading' };
-  }
-
-  private error(err: unknown): Vm {
-    const message = err instanceof Error ? err.message : 'Erreur inconnue';
-    return { state: 'error', error: message };
-  }
 
   refresh(): void {
     this._userService.refresh();
@@ -57,5 +35,26 @@ export class ListeUserComponent {
 
   recover(): void {
     this._userService.setShouldFail(false);
+  }
+
+  private createVmCycle$(): Observable<Vm> {
+    return this._userService.loadUsers().pipe(
+      map((users) => this.ready(users)),
+      startWith(this.loading()),
+      catchError((err) => of(this.error(err))),
+    );
+  }
+
+  private ready(users: User[]): Vm {
+    return { state: 'ready', users };
+  }
+
+  private loading(): Vm {
+    return { state: 'loading' };
+  }
+
+  private error(err: unknown): Vm {
+    const message = err instanceof Error ? err.message : 'Erreur inconnue';
+    return { state: 'error', error: message };
   }
 }
