@@ -1,5 +1,5 @@
-export const MOCK_USERS = 
-  [{
+export const MOCK_USERS = [
+  {
     id: '1',
     firstName: 'Jean',
     lastName: 'Dupont',
@@ -14,9 +14,7 @@ export const MOCK_USERS =
     firstName: 'Marie',
     lastName: 'Curie',
     email: 'marie.curie@example.com',
-    roles: [
-      { id: 'user', label: 'Utilisateur', ponderation: '1' },
-    ],
+    roles: [{ id: 'user', label: 'Utilisateur', ponderation: '1' }],
   },
   {
     id: '3',
@@ -27,4 +25,5 @@ export const MOCK_USERS =
       { id: 'moderator', label: 'Modérateur', ponderation: '2' },
       { id: 'user', label: 'Utilisateur', ponderation: '1' },
     ],
-  }];
+  },
+];

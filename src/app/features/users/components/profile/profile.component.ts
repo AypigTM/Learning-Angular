@@ -10,7 +10,7 @@ type Vm = { state: 'loading' } | { state: 'error'; error: string } | { state: 'r
 
 @Component({
   standalone: true,
-  selector: 'app-profile',
+  selector: 'app-user-profile',
   imports: [AsyncPipe],
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.css'],

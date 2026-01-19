@@ -17,7 +17,9 @@
         <h2>Liste des utilisateurs</h2>
         <ul>
           @for (user of vm.users; track user.id) {
-            <li>{{ user.firstName }} {{ user.lastName }} - {{ user.email }}</li>
+            <li (click)="open(user.id)" class="clickable">
+              {{ user.firstName }} {{ user.lastName }} - {{ user.email }}
+            </li>
           } @empty {
             <li>Aucun utilisateur trouvé</li>
           }

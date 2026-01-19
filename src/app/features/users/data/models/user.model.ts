@@ -7,7 +7,7 @@ export interface User {
 }
 
 export interface Role {
-    id: string;
-    label: string;
-    ponderation: string;
+  id: string;
+  label: string;
+  ponderation: string;
 }

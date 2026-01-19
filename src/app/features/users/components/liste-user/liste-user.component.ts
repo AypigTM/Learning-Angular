@@ -3,6 +3,7 @@ import { Component, inject } from '@angular/core';
 import { catchError, map, Observable, of, startWith, switchMap } from 'rxjs';
 import { User } from '../../data/models/user.model';
 import { UserService } from '../../data/user.service';
+import { Router } from '@angular/router';
 
 type Vm =
   | { state: 'loading' }
@@ -17,6 +18,7 @@ type Vm =
 })
 export class ListeUserComponent {
   private readonly _userService = inject(UserService);
+  private readonly _router = inject(Router);
 
   readonly vm$: Observable<Vm> = this._userService.refreshTrigger$.pipe(
     startWith(void 0),
@@ -35,6 +37,11 @@ export class ListeUserComponent {
 
   recover(): void {
     this._userService.setShouldFail(false);
+  }
+
+  open(id: string): void {
+    console.log('connard');
+    this._router.navigate(['users/user', id]);
   }
 
   private createVmCycle$(): Observable<Vm> {

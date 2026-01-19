@@ -1,14 +1,12 @@
 import { Injectable } from '@angular/core';
 import { Observable, Subject, defer, of, throwError } from 'rxjs';
-import { delay } from 'rxjs/operators';
+import { delay, switchMap } from 'rxjs/operators';
 import { MOCK_USERS } from './mocks/user.mock';
 import { User } from './models/user.model';
 
 @Injectable({ providedIn: 'root' })
 export class UserService {
   private readonly refresh$ = new Subject<void>();
-
-  private lastUserId: string | null = null;
   private shouldFail = false;
 
   /** Exposé au composant pour déclencher le cycle de chargement (lecture seule). */
@@ -31,9 +29,12 @@ export class UserService {
       const user = MOCK_USERS.find((user) => user.id === id);
 
       if (!user) {
-        return throwError(() => new Error(`Echec du chargement de l'utilisateur ${id}`));
+        return of(null).pipe(
+          delay(200),
+          switchMap(() => throwError(() => new Error(`L'utilisateur ${id} est inconnu`))),
+        );
       }
-      return of(user).pipe(delay(50));
+      return of(user).pipe(delay(500));
     });
   }
 
