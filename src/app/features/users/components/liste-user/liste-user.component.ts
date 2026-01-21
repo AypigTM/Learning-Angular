@@ -4,6 +4,7 @@ import { catchError, map, Observable, of, startWith, switchMap } from 'rxjs';
 import { User } from '../../data/models/user.model';
 import { UserService } from '../../data/user.service';
 import { Router } from '@angular/router';
+import { BreadcrumbComponent } from '../breadcrumb/breadcrumb.component';
 
 type Vm =
   | { state: 'loading' }
@@ -11,10 +12,14 @@ type Vm =
   | { state: 'ready'; users: User[] };
 
 @Component({
+  standalone: true,
   selector: 'app-liste-user',
-  imports: [AsyncPipe],
+  imports: [
+    AsyncPipe,
+    BreadcrumbComponent
+  ],
   templateUrl: './liste-user.component.html',
-  styleUrl: './liste-user.component.css',
+  styleUrls: ['./liste-user.component.css'],
 })
 export class ListeUserComponent {
   private readonly _userService = inject(UserService);

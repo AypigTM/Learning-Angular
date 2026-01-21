@@ -5,13 +5,17 @@ import { Observable, of } from 'rxjs';
 import { catchError, filter, map, startWith, switchMap } from 'rxjs/operators';
 import { User } from '../../data/models/user.model';
 import { UserService } from '../../data/user.service';
+import { BreadcrumbComponent } from '../breadcrumb/breadcrumb.component';
 
 type Vm = { state: 'loading' } | { state: 'error'; error: string } | { state: 'ready'; user: User };
 
 @Component({
   standalone: true,
   selector: 'app-user-profile',
-  imports: [AsyncPipe],
+  imports: [
+    AsyncPipe,
+    BreadcrumbComponent,
+  ],
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.css'],
 })

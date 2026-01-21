@@ -3,6 +3,7 @@
   <button (click)="fail()">Simuler erreur</button>
   <button (click)="recover()">Réparer</button>
 </div>
+<app-breadcrumb></app-breadcrumb>
 
 @if (vm$ | async; as vm) {
   @switch (vm.state) {

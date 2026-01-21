@@ -1,0 +1,20 @@
+<nav class="bc" aria-label="Breadcrumb">
+  <ol class="bc__list">
+    <li
+      class="bc__item"
+      *ngFor="let c of crumbs; let last = last"
+      [attr.aria-current]="last ? 'page' : null"
+    >
+      <ng-container *ngIf="!last; else current">
+        <a class="bc__link" [routerLink]="c.url">
+          {{ c.label }}
+        </a>
+        <span class="bc__sep" aria-hidden="true">/</span>
+      </ng-container>
+
+      <ng-template #current>
+        <span class="bc__current">{{ c.label }}</span>
+      </ng-template>
+    </li>
+  </ol>
+</nav>

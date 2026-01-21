@@ -4,6 +4,8 @@
   <button (click)="recover()">Réparer</button>
 </div>
 
+<app-breadcrumb></app-breadcrumb>
+
 @if (vm$ | async; as vm) {
   @switch (vm.state) {
     @case ('loading') {
