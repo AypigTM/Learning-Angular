@@ -1,16 +1,14 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
+import { User } from '../../data/models/user.model';
 
 export type Crumb = { label: string; url: any[] };
 
 @Component({
   standalone: true,
   selector: 'app-breadcrumb',
-  imports: [
-    CommonModule,
-    RouterLink
-  ],
+  imports: [CommonModule, RouterLink],
   templateUrl: './breadcrumb.component.html',
   styleUrls: ['./breadcrumb.component.css'],
 })
@@ -34,10 +32,15 @@ export class BreadcrumbComponent {
       const id = snap.params['id'] as string | undefined;
 
       let label: string | undefined;
-      if (bc  && id ) {
+      if (bc && id) {
         label = `${bc} ${id}`;
       } else if (bc) {
         label = `${bc}`;
+      }
+
+      const user = snap.data['user'] as User | undefined;
+      if (user) {
+        label = `${user.lastName.toUpperCase()} ${user.firstName}`;
       }
 
       if (label) {
